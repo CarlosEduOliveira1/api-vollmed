@@ -1,4 +1,6 @@
-package med.voll.api.doctor;
+package med.voll.api.customer;
+
+import java.time.LocalDate;
 
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -13,34 +15,37 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import med.voll.api.address.Address;
+import med.voll.api.person.Gender;
 
-@Table(name = "doctors")
-@Entity(name = "Doctor")
+@Table(name = "customers")
+@Entity(name = "customer")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Doctor {
+public class Customer {
 
    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long id;
    private String name;
-   private String phone;
+   private String document;
    private String email;
-   private String crm;
+   private String phone;
+   private LocalDate birthdate;
 
    @Enumerated(EnumType.STRING)
-   private Specialty specialty;
+   private Gender gender;
 
    @Embedded
    private Address address;
 
-   public Doctor(DoctorDTO doctor) {
-      this.name = doctor.name();
-      this.phone = doctor.phone();
-      this.email = doctor.email();
-      this.crm = doctor.crm();
-      this.specialty = doctor.specialty();
-      this.address = new Address(doctor.address());
+   public Customer(CustomerDTO customer) {
+      this.name = customer.name();
+      this.document = customer.document();
+      this.email = customer.email();
+      this.phone = customer.phone();
+      this.birthdate = customer.birthdate();
+      this.gender = customer.gender();
+      this.address = new Address(customer.address());
    }
 }
