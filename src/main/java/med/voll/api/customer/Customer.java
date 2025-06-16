@@ -30,6 +30,7 @@ public class Customer {
    private String name;
    private String document;
    private String email;
+   private boolean active;
    private String phone;
    private LocalDate birthdate;
 
@@ -43,9 +44,28 @@ public class Customer {
       this.name = customer.name();
       this.document = customer.document();
       this.email = customer.email();
+      this.active = true;
       this.phone = customer.phone();
       this.birthdate = customer.birthdate();
       this.gender = customer.gender();
       this.address = new Address(customer.address());
+   }
+
+   public void updateData(CustomerUpdateDTO customerData) {
+      if(customerData.name() != null) {
+         this.name = customerData.name();
+      }
+
+      if(customerData.phone() != null) {
+         this.phone = customerData.phone();
+      }
+
+      if(customerData.address() != null) {
+         this.address.updateData(customerData.address());
+      }
+   }
+
+   public void delete() {
+      this.active = false;
    }
 }

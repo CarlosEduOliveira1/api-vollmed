@@ -1,0 +1,1 @@
+alter table customers add active tinyint not null default(1) after email;

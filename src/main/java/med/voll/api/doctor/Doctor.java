@@ -32,6 +32,8 @@ public class Doctor {
    @Enumerated(EnumType.STRING)
    private Specialty specialty;
 
+   private boolean active;
+
    @Embedded
    private Address address;
 
@@ -41,6 +43,25 @@ public class Doctor {
       this.email = doctor.email();
       this.crm = doctor.crm();
       this.specialty = doctor.specialty();
+      this.active = true;
       this.address = new Address(doctor.address());
+   }
+
+   public void updateData(DoctorUpdateDTO doctorData) {
+      if(doctorData.name() != null) {
+         this.name = doctorData.name();
+      }
+
+      if(doctorData.phone() != null) {
+         this.phone = doctorData.phone();
+      }
+
+      if(doctorData.address() != null) {
+         this.address.updateData(doctorData.address());
+      }
+   }
+
+   public void delete() {
+      this.active = false;
    }
 }

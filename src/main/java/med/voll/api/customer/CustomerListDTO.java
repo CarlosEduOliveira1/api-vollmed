@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import med.voll.api.person.Gender;
 
 public record CustomerListDTO(
+      Long id,
       String name,
       String document,
       String email,
@@ -13,6 +14,14 @@ public record CustomerListDTO(
       Gender gender) {
 
    public CustomerListDTO(Customer customer) {
-      this(customer.getName(), customer.getDocument(), customer.getEmail(), customer.getPhone(), customer.getBirthdate(), customer.getGender());
+      this(
+         customer.getId(),
+         customer.getName(),
+         customer.getDocument(),
+         customer.getEmail(),
+         customer.getPhone(),
+         customer.getBirthdate(),
+         customer.getGender()
+      );
    }
 }

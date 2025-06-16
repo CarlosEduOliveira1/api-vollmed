@@ -28,4 +28,34 @@ public class Address {
       this.number = address.number();
       this.complement = address.complement();
    }
+
+   public void updateData(AddressDTO addressData) {
+      if(addressData.street() != null) {
+         this.street = addressData.street();
+      }
+
+      if(addressData.neighbourhood() != null) {
+         this.neighbourhood = addressData.neighbourhood();
+      }
+
+      if(addressData.postcode() != null) {
+         this.postcode = addressData.postcode();
+      }
+
+      if(addressData.city() != null) {
+         this.city = addressData.city();
+      }
+
+      if(addressData.uf() != null) {
+         this.uf = addressData.uf();
+      }
+
+      if(addressData.number() != null) {
+         this.number = addressData.number();
+      }
+
+      if(addressData.complement() != null) {
+         this.complement = addressData.complement();
+      }
+   }
 }

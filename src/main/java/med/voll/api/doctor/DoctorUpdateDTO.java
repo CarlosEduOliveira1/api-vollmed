@@ -1,4 +1,6 @@
 package med.voll.api.doctor;
 
-public record DoctorUpdateDTO(Long id, String nome, String teledone, ) {
+import med.voll.api.address.AddressDTO;
+
+public record DoctorUpdateDTO(Long id, String name, String phone, AddressDTO address) {
 }
