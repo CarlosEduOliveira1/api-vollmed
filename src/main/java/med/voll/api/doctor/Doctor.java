@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -34,7 +35,7 @@ public class Doctor {
 
    private boolean active;
 
-   @Embedded
+   @Transient
    private Address address;
 
    public Doctor(DoctorDTO doctor) {
@@ -44,7 +45,7 @@ public class Doctor {
       this.crm = doctor.crm();
       this.specialty = doctor.specialty();
       this.active = true;
-      this.address = new Address(doctor.address());
+      // this.address = new Address(doctor.address());
    }
 
    public void updateData(DoctorUpdateDTO doctorData) {
@@ -56,9 +57,9 @@ public class Doctor {
          this.phone = doctorData.phone();
       }
 
-      if(doctorData.address() != null) {
-         this.address.updateData(doctorData.address());
-      }
+      // if(doctorData.address() != null) {
+      //    this.address.updateData(doctorData.address());
+      // }
    }
 
    public void delete() {

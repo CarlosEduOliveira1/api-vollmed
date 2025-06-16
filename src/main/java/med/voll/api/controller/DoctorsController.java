@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import med.voll.api.address.Address;
+import med.voll.api.address.AddressRepository;
 import med.voll.api.doctor.Doctor;
 import med.voll.api.doctor.DoctorDTO;
 import med.voll.api.doctor.DoctorListDTO;
@@ -28,10 +30,20 @@ public class DoctorsController {
    @Autowired
    private DoctorRepository repository;
 
+   @Autowired
+   private AddressRepository addressRepository;
+
    @PostMapping
    @Transactional
    public void create(@RequestBody @Valid DoctorDTO doctor) {
-      repository.save(new Doctor(doctor));
+      Doctor savedDoctor = repository.save(new Doctor(doctor));
+
+      Address address = new Address(
+         doctor.address(),
+         savedDoctor.getId(),
+         "Doctor"
+      );
+      addressRepository.save(address);
    }
 
    @GetMapping
@@ -44,6 +56,10 @@ public class DoctorsController {
    public void update(@RequestBody @Valid DoctorUpdateDTO doctorData) {
       var doctor = repository.getReferenceById(doctorData.id());
       doctor.updateData(doctorData);
+      
+      var address = addressRepository.findByAddressableIdAndAddressableType(doctorData.id(), "Doctor");
+      
+
    }
 
    @DeleteMapping("/{id}")

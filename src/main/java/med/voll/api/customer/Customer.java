@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -37,7 +38,7 @@ public class Customer {
    @Enumerated(EnumType.STRING)
    private Gender gender;
 
-   @Embedded
+   @Transient
    private Address address;
 
    public Customer(CustomerDTO customer) {
@@ -48,7 +49,7 @@ public class Customer {
       this.phone = customer.phone();
       this.birthdate = customer.birthdate();
       this.gender = customer.gender();
-      this.address = new Address(customer.address());
+      // this.address = new Address(customer.address());
    }
 
    public void updateData(CustomerUpdateDTO customerData) {
@@ -60,9 +61,9 @@ public class Customer {
          this.phone = customerData.phone();
       }
 
-      if(customerData.address() != null) {
-         this.address.updateData(customerData.address());
-      }
+      // if(customerData.address() != null) {
+      //    this.address.updateData(customerData.address());
+      // }
    }
 
    public void delete() {
