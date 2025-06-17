@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,39 +34,53 @@ public class DoctorsController {
    @Autowired
    private AddressRepository addressRepository;
 
-   @PostMapping
-   @Transactional
-   public void create(@RequestBody @Valid DoctorDTO doctor) {
-      Doctor savedDoctor = repository.save(new Doctor(doctor));
+   // @PostMapping
+   // @Transactional
+   // public ResponseEntity create(@RequestBody @Valid DoctorDTO doctor) {
+   //    Doctor savedDoctor = repository.save(new Doctor(doctor));
 
-      Address address = new Address(
-         doctor.address(),
-         savedDoctor.getId(),
-         "Doctor"
-      );
-      addressRepository.save(address);
+   //    Address address = new Address(
+   //          doctor.address(),
+   //          savedDoctor.getId(),
+   //          "Doctor");
+   //    addressRepository.save(address);
+   // }
+
+   // @GetMapping
+   // public ResponseEntity<Page<DoctorListDTO>> list(@PageableDefault(sort = { "name" }) Pageable pageable) {
+   //    var page = repository.findAllByActiveTrue(pageable).map(DoctorListDTO::new);
+
+   //    return ResponseEntity.ok(page);
+   // }
+   @GetMapping("/test")
+   public ResponseEntity<Doctor> getDoctorWithIdTwo() {
+      Long id = 2L;
+      Doctor doctor = repository.findById(id).orElse(null);
+      if (doctor == null) {
+         return ResponseEntity.notFound().build();
+      }
+      return ResponseEntity.ok(doctor);
    }
 
-   @GetMapping
-   public Page<DoctorListDTO> list(@PageableDefault(sort = {"name"}) Pageable pageable) {
-      return repository.findAllByActiveTrue(pageable).map(DoctorListDTO::new);
-   }
+   // @PutMapping
+   // @Transactional
+   // public ResponseEntity update(@RequestBody @Valid DoctorUpdateDTO doctorData) {
+   //    var doctor = repository.getReferenceById(doctorData.id());
+   //    doctor.updateData(doctorData);
 
-   @PutMapping
-   @Transactional
-   public void update(@RequestBody @Valid DoctorUpdateDTO doctorData) {
-      var doctor = repository.getReferenceById(doctorData.id());
-      doctor.updateData(doctorData);
-      
-      var address = addressRepository.findByAddressableIdAndAddressableType(doctorData.id(), "Doctor");
-      
+   //    var address = addressRepository.findByAddressableIdAndAddressableType(doctorData.id(), "Doctor");
+   //    if (address != null && doctorData.address() != null) {
+   //       address.updateData(doctorData.address());
+   //       addressRepository.save(address);
+   //    }
+   // }
 
-   }
+   // @DeleteMapping("/{id}")
+   // @Transactional
+   // public ResponseEntity delete(@PathVariable Long id) {
+   //    var doctor = repository.getReferenceById(id);
+   //    doctor.delete();
 
-   @DeleteMapping("/{id}")
-   @Transactional
-   public void delete(@PathVariable Long id) {
-      var doctor = repository.getReferenceById(id);
-      doctor.delete();
-   }
+   //    return ResponseEntity.noContent().build();
+   // }
 }

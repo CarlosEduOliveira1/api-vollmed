@@ -14,22 +14,33 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import med.voll.api.address.Address;
+import med.voll.api.address.AddressRepository;
 import med.voll.api.customer.Customer;
 import med.voll.api.customer.CustomerDTO;
 import med.voll.api.customer.CustomerListDTO;
 import med.voll.api.customer.CustomerRepository;
 import med.voll.api.customer.CustomerUpdateDTO;
 
-@RestController 
+@RestController
 @RequestMapping("clientes")
 public class CustomersController {
 
    @Autowired
    private CustomerRepository repository;
 
+   @Autowired
+   private AddressRepository addressRepository;
+
    @PostMapping
    public void create(@RequestBody @Valid CustomerDTO customer) {
-      repository.save(new Customer(customer));
+      Customer savedCustomer = repository.save(new Customer(customer));
+
+      Address address = new Address(
+            customer.address(),
+            savedCustomer.getId(),
+            "Customer");
+      addressRepository.save(address);
    }
 
    @GetMapping
@@ -42,10 +53,16 @@ public class CustomersController {
    public void update(@RequestBody @Valid CustomerUpdateDTO customerData) {
       var customer = repository.getReferenceById(customerData.id());
       customer.updateData(customerData);
+
+      var address = addressRepository.findByAddressableIdAndAddressableType(customerData.id(), "Customer");
+      if(address != null && customerData.address() != null) {
+         address.updateData(customerData.address());
+         addressRepository.save(address);
+      }
    }
 
    @DeleteMapping("/{id}")
-   @Transactional 
+   @Transactional
    public void delete(@PathVariable Long id) {
       var customer = repository.getReferenceById(id);
       customer.delete();

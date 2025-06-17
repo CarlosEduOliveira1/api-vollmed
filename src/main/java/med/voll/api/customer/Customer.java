@@ -9,6 +9,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
@@ -38,7 +41,12 @@ public class Customer {
    @Enumerated(EnumType.STRING)
    private Gender gender;
 
-   @Transient
+   @OneToOne
+   @JoinTable(
+      name = "customers_addresses",
+      joinColumns = @JoinColumn(name = "customer_id"),
+      inverseJoinColumns = @JoinColumn(name = "address_id")
+   )
    private Address address;
 
    public Customer(CustomerDTO customer) {
@@ -49,7 +57,6 @@ public class Customer {
       this.phone = customer.phone();
       this.birthdate = customer.birthdate();
       this.gender = customer.gender();
-      // this.address = new Address(customer.address());
    }
 
    public void updateData(CustomerUpdateDTO customerData) {
@@ -60,10 +67,6 @@ public class Customer {
       if(customerData.phone() != null) {
          this.phone = customerData.phone();
       }
-
-      // if(customerData.address() != null) {
-      //    this.address.updateData(customerData.address());
-      // }
    }
 
    public void delete() {
