@@ -3,6 +3,7 @@ package med.voll.api.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,11 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import med.voll.api.address.Address;
+import med.voll.api.address.AddressDTO;
 import med.voll.api.address.AddressRepository;
 import med.voll.api.customer.Customer;
 import med.voll.api.customer.CustomerDTO;
 import med.voll.api.customer.CustomerListDTO;
 import med.voll.api.customer.CustomerRepository;
+import med.voll.api.customer.CustomerShowDTO;
 import med.voll.api.customer.CustomerUpdateDTO;
 
 @RestController
@@ -33,38 +36,58 @@ public class CustomersController {
    private AddressRepository addressRepository;
 
    @PostMapping
-   public void create(@RequestBody @Valid CustomerDTO customer) {
-      Customer savedCustomer = repository.save(new Customer(customer));
+   public ResponseEntity<CustomerShowDTO> create(@RequestBody @Valid CustomerDTO customer) {
+      Address customerAddress;
+      AddressDTO incomingAddress = customer.address();
+      customerAddress = new Address(incomingAddress);
 
-      Address address = new Address(
-            customer.address(),
-            savedCustomer.getId(),
-            "Customer");
-      addressRepository.save(address);
+      addressRepository.save(customerAddress);
+
+      Customer newCustomer = new Customer(customer);
+      newCustomer.setAddress(customerAddress);
+
+      Customer savedCustomer = repository.save(newCustomer);
+
+      return ResponseEntity.ok(new CustomerShowDTO(savedCustomer));
    }
 
    @GetMapping
-   public Page<CustomerListDTO> list(Pageable pageable) {
-      return repository.findAllByActiveTrue(pageable).map(CustomerListDTO::new);
+   public ResponseEntity<Page<CustomerListDTO>> list(Pageable pageable) {
+      var page = repository.findAllByActiveTrue(pageable).map(CustomerListDTO::new);
+      
+      return ResponseEntity.ok(page);
+   }
+
+   @GetMapping("/{id}")
+   public ResponseEntity<CustomerShowDTO> show(@PathVariable Long id) {
+      Customer customer = repository.getReferenceById(id);
+
+      return ResponseEntity.ok(new CustomerShowDTO(customer));
    }
 
    @PutMapping
    @Transactional
-   public void update(@RequestBody @Valid CustomerUpdateDTO customerData) {
+   public ResponseEntity<CustomerShowDTO> update(@RequestBody @Valid CustomerUpdateDTO customerData) {
       var customer = repository.getReferenceById(customerData.id());
       customer.updateData(customerData);
 
-      var address = addressRepository.findByAddressableIdAndAddressableType(customerData.id(), "Customer");
-      if(address != null && customerData.address() != null) {
-         address.updateData(customerData.address());
-         addressRepository.save(address);
+      var currentAddress = customer.getAddress();
+      if(currentAddress != null && customerData.address() != null) {
+         currentAddress.updateData(customerData.address());
+         addressRepository.save(currentAddress);
       }
+
+      Customer updatedCustomer = repository.save(customer);
+
+      return ResponseEntity.ok(new CustomerShowDTO(updatedCustomer));
    }
 
    @DeleteMapping("/{id}")
    @Transactional
-   public void delete(@PathVariable Long id) {
+   public ResponseEntity<Void> delete(@PathVariable Long id) {
       var customer = repository.getReferenceById(id);
       customer.delete();
+
+      return ResponseEntity.noContent().build();
    }
 }

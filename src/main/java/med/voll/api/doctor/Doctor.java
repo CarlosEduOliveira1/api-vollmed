@@ -1,6 +1,5 @@
 package med.voll.api.doctor;
 
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -11,7 +10,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -55,6 +53,8 @@ public class Doctor {
       this.active = true;
       // this.address = new Address(doctor.address());
    }
+
+   public void setAddress(Address address) { this.address = address; }
 
    public void updateData(DoctorUpdateDTO doctorData) {
       if(doctorData.name() != null) {
